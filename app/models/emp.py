@@ -21,7 +21,7 @@ class Employee(Base):
 
     birth_date: Mapped[date] = mapped_column(DateTime)
 
-    phone: Mapped[str] = mapped_column(String(20))
+    phone: Mapped[str | None] = mapped_column(String(20))
 
     gender: Mapped[str] = mapped_column(String(10))
 

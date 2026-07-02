@@ -1,0 +1,32 @@
+<h1>Реестр сотрудников</h1>
+
+<a href="/employees/create">
+    Добавить сотрудников
+</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ФИО</th>
+            <th>Возраст</th>
+            <th>Телефон</th>
+            <th>Пол</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for employee in employees %}
+        <tr>
+            <td>{{employee.id}}</td>
+            <td>
+                {{employee.last_name}}
+                {{employee.first_name}}
+            </td>
+            <td>...</td>
+            <td>{{employee.phone</td>
+            <td>{{employee.gender}}</td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
