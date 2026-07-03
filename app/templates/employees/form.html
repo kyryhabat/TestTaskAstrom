@@ -1,10 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<h1>{{ 'Редактирование сотрудника' if employee else 'Создание сотрудника' }}</h1>
 
-</body>
-</html>
+<form method="post"
+      action="{{ '/employee/' ~ employee.id ~ '/update' if employee else '/employee/create' }}"
+      enctype="multipart/form-data">
+
+    <label>Фамилия: *</label>
+    <input type="text" name="last_name" value="{{ employee.last_name if employee else '' }}" required>
+    <br>
+
+    <label>Имя: *</label>
+    <input type="text" name="first_name" value="{{ employee.first_name if employee else '' }}" required>
+    <br>
+
+    <label>Отчество:</label>
+    <input type="text" name="middle_name" value="{{ employee.middle_name if employee else '' }}">
+    <br>
+
+    <label>Дата рождения: *</label>
+    <input type="date" name="birth_date"
+           value="{{ employee.birth_date if employee else '' }}" required>
+    <br>
+
+    <label>Пол:</label>
+    <select name="gender">
+        <option value="male" {% if employee and employee.gender == 'male' %}selected{% endif %}>Муж.</option>
+        <option value="female" {% if employee and employee.gender == 'female' %}selected{% endif %}>Жен.</option>
+    </select>
+    <br>
+
+    <label>Телефон:</label>
+    <input type="text" name="phone" value="{{ employee.phone if employee else '' }}">
+    <br>
+
+    <label>Фото: (макс. 200 КБ)</label>
+    <input type="file" name="photo" accept="image/*">
+    {% if employee and employee.photo_path %}
+        <br>
+        <img src="/static/{{ employee.photo_path }}" alt="Текущее фото" width="80">
+    {% endif %}
+    <br>
+
+    <button type="submit">Сохранить</button>
+    <a href="/employee/">Отмена</a>
+</form>

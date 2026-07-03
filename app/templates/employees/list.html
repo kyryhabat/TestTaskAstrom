@@ -1,32 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Реестр сотрудников</title>
+
+    <style>
+        .employee-photo {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: transform 0.2s;
+        }
+
+        .employee-photo:hover {
+            transform: scale(3);
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination a,
+        .pagination strong {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
 <h1>Реестр сотрудников</h1>
 
-<a href="/employees/create">
-    Добавить сотрудников
-</a>
+<a href="/employee/create">Добавить сотрудника</a>
 
-<table>
+<hr>
+
+<form method="get" action="/employee/">
+
+    <input
+        type="text"
+        name="q"
+        placeholder="Поиск по ФИО или телефону"
+        value="{{ query or '' }}"
+    >
+
+    <select name="gender">
+        <option value="">Выберите пол</option>
+
+        <option
+            value="male"
+            {% if gender_filter == 'male' %}selected{% endif %}
+        >
+            Муж.
+        </option>
+
+        <option
+            value="female"
+            {% if gender_filter == 'female' %}selected{% endif %}
+        >
+            Жен.
+        </option>
+    </select>
+
+    Возраст:
+
+    с
+    <input
+        type="number"
+        name="age_from"
+        value="{{ age_from or '' }}"
+        style="width: 60px;"
+    >
+
+    по
+
+    <input
+        type="number"
+        name="age_to"
+        value="{{ age_to or '' }}"
+        style="width: 60px;"
+    >
+
+    <button type="submit">Поиск</button>
+
+</form>
+
+<hr>
+
+<table border="1" cellpadding="6">
+
     <thead>
         <tr>
+            <th>Фото</th>
             <th>ID</th>
             <th>ФИО</th>
             <th>Возраст</th>
             <th>Телефон</th>
             <th>Пол</th>
+            <th>Действие</th>
         </tr>
     </thead>
+
     <tbody>
-        {% for employee in employees %}
+
+    {% for employee in employees %}
+
         <tr>
-            <td>{{employee.id}}</td>
+
             <td>
-                {{employee.last_name}}
-                {{employee.first_name}}
+                {% if employee.photo_path %}
+                    <img
+                        src="/static/{{ employee.photo_path }}"
+                        alt="Фото"
+                        class="employee-photo"
+                    >
+                {% else %}
+                    —
+                {% endif %}
             </td>
-            <td>...</td>
-            <td>{{employee.phone</td>
-            <td>{{employee.gender}}</td>
+
+            <td>{{ employee.id }}</td>
+
+            <td>
+                {{ employee.last_name }}
+                {{ employee.first_name }}
+
+                {% if employee.middle_name %}
+                    {{ employee.middle_name }}
+                {% endif %}
+            </td>
+
+            <td>{{ employee.age }}</td>
+
+            <td>
+                {{ employee.phone or '—' }}
+            </td>
+
+            <td
+                style="color:
+                {{ '#4a90d9' if employee.gender == 'male'
+                else '#d94a90' }};"
+            >
+                {{ 'Муж.' if employee.gender == 'male'
+                else 'Жен.' }}
+            </td>
+
+            <td>
+
+                <a href="/employee/{{ employee.id }}/update">
+                    Ред.
+                </a>
+
+                <form
+                    method="post"
+                    action="/employee/{{ employee.id }}/delete"
+                    style="display:inline;"
+                    onsubmit="return confirm(
+                    'Удалить сотрудника {{ employee.last_name }} {{ employee.first_name }}?'
+                    );"
+                >
+                    <button type="submit">
+                        Удал.
+                    </button>
+                </form>
+
+            </td>
 
         </tr>
-        {% endfor %}
+
+    {% else %}
+
+        <tr>
+            <td colspan="7">
+                Сотрудники не найдены
+            </td>
+        </tr>
+
+    {% endfor %}
+
     </tbody>
+
 </table>
+
+<div class="pagination">
+
+    {% if page > 1 %}
+        <a href="/employee/?page={{ page - 1 }}
+        &q={{ query or '' }}
+        &gender={{ gender_filter or '' }}
+        &age_from={{ age_from or '' }}
+        &age_to={{ age_to or '' }}">
+            « Назад
+        </a>
+    {% endif %}
+
+    {% for p in range(1, total_pages + 1) %}
+
+        {% if p == page %}
+
+            <strong>{{ p }}</strong>
+
+        {% else %}
+
+            <a href="/employee/?page={{ p }}
+            &q={{ query or '' }}
+            &gender={{ gender_filter or '' }}
+            &age_from={{ age_from or '' }}
+            &age_to={{ age_to or '' }}">
+                {{ p }}
+            </a>
+
+        {% endif %}
+
+    {% endfor %}
+
+    {% if page < total_pages %}
+
+        <a href="/employee/?page={{ page + 1 }}
+        &q={{ query or '' }}
+        &gender={{ gender_filter or '' }}
+        &age_from={{ age_from or '' }}
+        &age_to={{ age_to or '' }}">
+            Вперёд »
+        </a>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
